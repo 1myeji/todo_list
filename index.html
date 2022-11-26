@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToDoList_ImYeJi</title>
+  <!-- reset css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css">
+  <link rel="stylesheet" href="./main.css">
+  <!-- font awesome -->
+  <script src="https://kit.fontawesome.com/2e36fe72c3.js" crossorigin="anonymous"></script>
+  <!-- sortablejs -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <script defer src="./main.js"></script>
+</head>
+<body>
+  <section class="section-center">
+    <form class="todo-form">
+      <p class="alert"></p>
+      <h3>To Do List</h3>
+      <div class="form-control">
+        <input type="text" class="todo" placeholder="Add a Todo..">
+        <button type="submit" class="submit-btn">submit</button>
+      </div>
+    </form>
+    <div class="container">
+      <div class="list"></div>
+      <button type="button" class="clear-btn">clear items</button>
+    </div>
+  </section>
+</body>
+</html>
