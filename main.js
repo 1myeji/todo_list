@@ -2,6 +2,7 @@ import { getTodo } from "./getTodo.js"
 import { addTodo } from "./addTodo.js"
 import { deleteTodo } from "./deleteTodo.js"
 import { editTodo } from "./editTodo.js"
+import { changeOrder } from "./changeOrder.js"
 
 const alert = document.querySelector('.alert')
 const form = document.querySelector('.todo-form')
@@ -16,6 +17,7 @@ let editFlag = false
 let overlap = false
 let editID
 let done = false // 일단 해둠
+let editOrder
 
 // submit 하면
 form.addEventListener('submit', addItem)
@@ -48,7 +50,7 @@ async function addItem(e) {
   }
   else if(title && editFlag && !overlap){
     editElement.innerHTML = title
-    await editTodo(editID, title, done)
+    await editTodo(editID, title, done, editOrder)
     displayAlert('value changed', 'success')
     setBackToDefault()
   }
@@ -77,11 +79,6 @@ function createTodo(title) {
   const editBtn = element.querySelector('.edit-btn')
   deleteBtn.addEventListener('click', deleteItem)
   editBtn.addEventListener('click', editItem)
-  // 드래그&드랍
-  new Sortable(list, {
-    animation: 150,
-    ghostClass: 'blue-backgorund-class'
-  })
   list.appendChild(element)
 }
 
@@ -139,8 +136,9 @@ async function editItem(e) {
   let lists = await getTodo()
   for(const list of lists) {
     if(editElement.textContent === list.title ) {
-      const { id } = list
+      const { id, order } = list
       editID = id
+      editOrder = order
       break
     }
   }
@@ -166,3 +164,9 @@ async function loadItems() {
     }
   }
 }
+
+// 드래그&드랍
+new Sortable(list, {
+  animation: 150,
+  ghostClass: 'blue-backgorund-class'
+})

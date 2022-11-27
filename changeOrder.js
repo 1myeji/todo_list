@@ -1,6 +1,6 @@
-// 항목 수정
-export async function editTodo(id, title, done, order) {
-  const res = await fetch(`https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos/${id}`, {
+// 목록 순서 변경
+export async function changeOrder(todoIds) {
+  const res = await fetch('https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos/reorder', {
     method: 'PUT',
     headers: {
       'content-type': 'application/json',
@@ -8,9 +8,7 @@ export async function editTodo(id, title, done, order) {
       'username': 'KDT3_ImYeJi'
     },
     body: JSON.stringify({
-      title,
-      done,
-      order
+      todoIds
     })
   })
   const json = await res.json()
