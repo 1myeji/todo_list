@@ -12,149 +12,52 @@ const clearBtn = document.querySelector('.clear-btn')
 
 let editElement
 let editFlag = false
-let editID = ''
+let overlap = false
 
-// submit form
+// submit 하면
 form.addEventListener('submit', addItem)
-// clear items
+// clear items 누르면
 clearBtn.addEventListener('click', clearItems)
-window.addEventListener('DOMContentLoaded', setupItems)
+// 새로고침
+// window.addEventListener('DOMContentLoaded', setupItems)
 
 async function addItem(e) {
   e.preventDefault()
-  const value = todo.value
-  await addTodo(value)
-  // await getTodo()
-  // const id = new Date().getTime().toString()
-  if(value && !editFlag){
-    createListItem(value)
-    displayAlert('item added to the list', 'success')
+  // 중복값 안 되게
+  let title = todo.value
+  const lists = await getTodo()
+  for(const list of lists) {
+    if(title === list.title) {
+      displayAlert('this value already exists', 'danger')
+      overlap = true
+      todo.value = ''
+    } 
+  }
+  if(title && !editFlag && !overlap){
+    await addTodo(title)
+    await getTodo()
+    createTodo(title)
+    displayAlert('todo added to the list', 'success')
     container.classList.add('show-container')
-    // add to local storage
-    addToLocalStorage(id, value)
-    // set back to default
     setBackToDefault()
   }
-  else if(value && editFlag){
-    editElement.innerHTML = value
+  else if(title && editFlag && !overlap){
+    editElement.innerHTML = title
     displayAlert('value changed', 'success')
-    // edit local storage
-    editLocalStorage(editID, value)
     setBackToDefault()
   }
-  else{
+  else if(!title && !overlap){
     displayAlert('please enter value', 'danger')
   }
-}
-
-// display alert
-function displayAlert(text, action) {
-  alert.textContent = text
-  alert.classList.add(`alert-${action}`)
-
-  // remove alert
-  setTimeout(function() {
-    alert.textContent = ''
-    alert.classList.remove(`alert-${action}`)
-  }, 1000)
-}
-
-function clearItems() {
-  const items = document.querySelectorAll('.item')
-
-  if(items.length > 0) {
-    items.forEach(item => {
-      list.removeChild(item)
-    })
-  }
-  container.classList.remove('show-container')
-  displayAlert('empty list', 'danger')
   setBackToDefault()
-  localStorage.removeItem('list')
 }
 
-function deleteItem(e) {
-  const element = e.currentTarget.parentElement.parentElement
-  const id = element.dataset.id
-  list.removeChild(element)
-  if(list.children.length === 0) {
-    container.classList.remove('show-container')
-  }
-  displayAlert('item removed', 'danger')
-  setBackToDefault()
-  // remove from local storage
-  removeFromLocalStorage(id)
-}
-
-function editItem(e) {
-  const element = e.currentTarget.parentElement.parentElement
-  editElement = e.currentTarget.parentElement.previousElementSibling
-  todo.value = editElement.innerHTML
-  editFlag = true
-  editID = element.dataset.id
-  submitBtn.textContent = 'edit'
-}
-
-// set back to default
-function setBackToDefault () {
-  todo.value = ''
-  editFlag = false
-  editID = ''
-  submitBtn.textContent = 'submit'
-}
-//local storage
-function addToLocalStorage(id, value) {
-  const todo = {id: id, value: value}
-  let items = getLocalStorage()
-  console.log(items);
-
-  items.push(todo)
-  localStorage.setItem('list', JSON.stringify(items))
-}
-function removeFromLocalStorage(id) {
-  let items = getLocalStorage()
-
-  items = items.filter((item) => {
-    if(item.id !== id) {
-      return item
-    }
-  })
-  localStorage.setItem('list', JSON.stringify(items))
-}
-function editLocalStorage(id, value) {
-  let items = getLocalStorage()
-  items = items.map((item) => {
-    if(item.id === id) {
-      item.value = value
-    }
-    return item
-  })
-  localStorage.setItem('list', JSON.stringify(items))
-}
-function getLocalStorage() {
-  return localStorage.getItem('list')? JSON.parse(localStorage.getItem('list')) : []
-}
-
-function setupItems() {
-  let items = getLocalStorage()
-  if(items.length > 0) {
-    items.forEach((item) => {
-      createListItem(item.id, item.value)
-    })
-    container.classList.add('show-container')
-  }
-}
-
-function createListItem(value) {
+function createTodo(title) {
   const element = document.createElement('article')
   // add class
   element.classList.add('item')
-  // add id
-  const attr = document.createAttribute('data-id')
-  attr.value = id
-  element.setAttributeNode(attr)
   element.innerHTML = /* html */`
-    <p class="title">${value}</p>
+    <p class="title">${title}</p>
     <div class="btn-container">
       <button type="button" class="edit-btn">
         <i class="fas fa-edit"></i>
@@ -173,11 +76,80 @@ function createListItem(value) {
     animation: 150,
     ghostClass: 'blue-backgorund-class'
   })
-
   list.appendChild(element)
 }
 
-// localStorage.setItem('orange', JSON.stringify(['item', 'item2']))
-// const oranges = JSON.parse(localStorage.getItem('orange'))
-// console.log(oranges);
-// localStorage.removeItem('orange')
+// display alert
+function displayAlert(text, action) {
+  alert.textContent = text
+  alert.classList.add(`alert-${action}`)
+
+  // remove alert
+  setTimeout(function() {
+    alert.textContent = ''
+    alert.classList.remove(`alert-${action}`)
+  }, 1000)
+}
+
+async function clearItems() {
+  const items = document.querySelectorAll('.item')
+  if(items.length > 0) {
+    items.forEach(item => {
+      list.removeChild(item)
+    })
+  }
+  let lists = await getTodo()
+  for(const list of lists) {
+    const { id } = list
+    await deleteTodo(id)
+  }
+  container.classList.remove('show-container')
+  displayAlert('empty list', 'danger')
+  setBackToDefault()
+}
+
+async function deleteItem(e) {
+  const element = e.currentTarget.parentElement.parentElement
+  const title = element.querySelector('p').textContent
+  console.log(title);
+  list.removeChild(element)
+  if(list.children.length === 0) {
+    container.classList.remove('show-container')
+  }
+  displayAlert('item removed', 'danger')
+  
+  let lists = await getTodo()
+  for(const list of lists) {
+    if(title === list.title) {
+      const { id } = list
+      await deleteTodo(id)
+    }
+  }
+  setBackToDefault()
+}
+
+function editItem(e) {
+  const element = e.currentTarget.parentElement.parentElement
+  editElement = e.currentTarget.parentElement.previousElementSibling
+  todo.value = editElement.innerHTML
+  editFlag = true
+  submitBtn.textContent = 'edit'
+}
+
+// set back to default
+function setBackToDefault () {
+  todo.value = ''
+  editFlag = false
+  overlap = false
+  submitBtn.textContent = 'submit'
+}
+
+// function setupItems() {
+//   let items = getLocalStorage()
+//   if(items.length > 0) {
+//     items.forEach((item) => {
+//       createTodo(item.id, item.title)
+//     })
+//     container.classList.add('show-container')
+//   }
+// }

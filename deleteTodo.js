@@ -1,6 +1,6 @@
 // 항목 삭제
-export async function deleteTodo() {
-  const res = await fetch('https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos', {
+export async function deleteTodo(id) {
+  const res = await fetch(`https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos/${id}` , {
     method: 'DELETE',
     headers: {
       'content-type': 'application/json',
