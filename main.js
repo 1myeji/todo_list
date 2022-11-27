@@ -1,6 +1,7 @@
 import { getTodo } from "./getTodo.js"
 import { addTodo } from "./addTodo.js"
 import { deleteTodo } from "./deleteTodo.js"
+import { editTodo } from "./editTodo.js"
 
 const alert = document.querySelector('.alert')
 const form = document.querySelector('.todo-form')
@@ -13,13 +14,15 @@ const clearBtn = document.querySelector('.clear-btn')
 let editElement
 let editFlag = false
 let overlap = false
+let editID
+let done = false // 일단 해둠
 
 // submit 하면
 form.addEventListener('submit', addItem)
 // clear items 누르면
 clearBtn.addEventListener('click', clearItems)
 // 새로고침
-// window.addEventListener('DOMContentLoaded', setupItems)
+window.addEventListener('DOMContentLoaded', loadItems)
 
 async function addItem(e) {
   e.preventDefault()
@@ -34,7 +37,9 @@ async function addItem(e) {
     } 
   }
   if(title && !editFlag && !overlap){
-    await addTodo(title)
+    let lists = await getTodo()
+    let order = lists.length
+    await addTodo(title, order)
     await getTodo()
     createTodo(title)
     displayAlert('todo added to the list', 'success')
@@ -43,6 +48,7 @@ async function addItem(e) {
   }
   else if(title && editFlag && !overlap){
     editElement.innerHTML = title
+    await editTodo(editID, title, done)
     displayAlert('value changed', 'success')
     setBackToDefault()
   }
@@ -111,7 +117,6 @@ async function clearItems() {
 async function deleteItem(e) {
   const element = e.currentTarget.parentElement.parentElement
   const title = element.querySelector('p').textContent
-  console.log(title);
   list.removeChild(element)
   if(list.children.length === 0) {
     container.classList.remove('show-container')
@@ -128,10 +133,17 @@ async function deleteItem(e) {
   setBackToDefault()
 }
 
-function editItem(e) {
-  const element = e.currentTarget.parentElement.parentElement
+async function editItem(e) {
   editElement = e.currentTarget.parentElement.previousElementSibling
   todo.value = editElement.innerHTML
+  let lists = await getTodo()
+  for(const list of lists) {
+    if(editElement.textContent === list.title ) {
+      const { id } = list
+      editID = id
+      break
+    }
+  }
   editFlag = true
   submitBtn.textContent = 'edit'
 }
@@ -144,12 +156,13 @@ function setBackToDefault () {
   submitBtn.textContent = 'submit'
 }
 
-// function setupItems() {
-//   let items = getLocalStorage()
-//   if(items.length > 0) {
-//     items.forEach((item) => {
-//       createTodo(item.id, item.title)
-//     })
-//     container.classList.add('show-container')
-//   }
-// }
+async function loadItems() {
+  let lists = await getTodo()
+  if(lists.length > 0) {
+    container.classList.add('show-container')
+    for(const list of lists) { {
+        createTodo(list.title)
+      }
+    }
+  }
+}
