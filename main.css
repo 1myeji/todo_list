@@ -94,7 +94,7 @@ body {
 .section-center .container .list {
 
 }
-.section-center .container .list .grocery-item {
+.section-center .container .list .item {
   display: flex;
   margin: 0 auto;
   align-items: center;
@@ -106,28 +106,28 @@ body {
   /* border-radius: 8px; */
   text-transform: capitalize;
 }
-.section-center .container .list .grocery-item:hover {
+.section-center .container .list .item:hover {
 
 }
-.section-center .container .list .grocery-item p {
+.section-center .container .list .item p {
   margin-bottom: 0;
   letter-spacing: 2px;
   transition: all 0.3s linear;
 }
-.section-center .container .list .grocery-item .btn-container {
+.section-center .container .list .item .btn-container {
 
 }
-.section-center .container .list .grocery-item .btn-container button {
+.section-center .container .list .item .btn-container button {
   background-color: transparent;
   border-color: transparent;
   cursor: pointer;
   font-size: 11.2px;
   transition: all 0.3s linear;
 }
-.section-center .container .list .grocery-item .btn-container .edit-btn {
+.section-center .container .list .item .btn-container .edit-btn {
   color: rgb(107, 230, 117);
 }
-.section-center .container .list .grocery-item .btn-container .delete-btn {
+.section-center .container .list .item .btn-container .delete-btn {
   color: red;
 }
 .container .clear-btn {
