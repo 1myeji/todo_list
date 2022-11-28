@@ -11,22 +11,24 @@ const submitBtn = document.querySelector('.submit-btn')
 const container = document.querySelector('.container')
 const list = document.querySelector('.list')
 const clearBtn = document.querySelector('.clear-btn')
+const orderchangeBtn = document.querySelector('.orderchange-btn')
 
-let editElement
+let editlist
 let editFlag = false
 let overlap = false
 let editID
 let done = false // 일단 해둠
 let editOrder
+let idArray= []
 
-// submit 하면
-form.addEventListener('submit', addItem)
-// clear items 누르면
-clearBtn.addEventListener('click', clearItems)
 // 새로고침
-window.addEventListener('DOMContentLoaded', loadItems)
+window.addEventListener('DOMContentLoaded', loadlist)
+// submit 하면
+form.addEventListener('submit', addlist)
+// clear items 누르면
+clearBtn.addEventListener('click', clearlist)
 
-async function addItem(e) {
+async function addlist(e) {
   e.preventDefault()
   // 중복값 안 되게
   let title = todo.value
@@ -41,15 +43,17 @@ async function addItem(e) {
   if(title && !editFlag && !overlap){
     let lists = await getTodo()
     let order = lists.length
-    await addTodo(title, order)
-    await getTodo()
-    createTodo(title)
+    let todos = await addTodo(title, order)
+    const { id } = todos
+    idArray.push(id)
+    createTodo(title, id)
+    console.log(idArray);
     displayAlert('todo added to the list', 'success')
     container.classList.add('show-container')
     setBackToDefault()
-  }
+  } 
   else if(title && editFlag && !overlap){
-    editElement.innerHTML = title
+    editlist.innerHTML = title
     await editTodo(editID, title, done, editOrder)
     displayAlert('value changed', 'success')
     setBackToDefault()
@@ -60,10 +64,13 @@ async function addItem(e) {
   setBackToDefault()
 }
 
-function createTodo(title) {
+function createTodo(title, id) {
   const element = document.createElement('article')
   // add class
   element.classList.add('item')
+  const attr = document.createAttribute('data-id')
+  attr.value = id
+  element.setAttributeNode(attr)
   element.innerHTML = /* html */`
     <p class="title">${title}</p>
     <div class="btn-container">
@@ -80,6 +87,7 @@ function createTodo(title) {
   deleteBtn.addEventListener('click', deleteItem)
   editBtn.addEventListener('click', editItem)
   list.appendChild(element)
+  list.addEventListener('drop', changelist)
 }
 
 // display alert
@@ -94,7 +102,7 @@ function displayAlert(text, action) {
   }, 1000)
 }
 
-async function clearItems() {
+async function clearlist() {
   const items = document.querySelectorAll('.item')
   if(items.length > 0) {
     items.forEach(item => {
@@ -105,6 +113,7 @@ async function clearItems() {
   for(const list of lists) {
     const { id } = list
     await deleteTodo(id)
+    idArray = []
   }
   container.classList.remove('show-container')
   displayAlert('empty list', 'danger')
@@ -123,19 +132,29 @@ async function deleteItem(e) {
   let lists = await getTodo()
   for(const list of lists) {
     if(title === list.title) {
-      const { id } = list
+      const { id, order } = list
       await deleteTodo(id)
+      idArray.filter(value => value !== id)
+    }
+  }
+  // delete시 order 변경
+  lists = await getTodo()
+  for(let i = 0; i < lists.length; i++) {
+    let {id, title, done, order} = lists[i]
+    if(i !== order) {
+      order = i
+      await editTodo(id, title, done, order)
     }
   }
   setBackToDefault()
 }
 
 async function editItem(e) {
-  editElement = e.currentTarget.parentElement.previousElementSibling
-  todo.value = editElement.innerHTML
+  editlist = e.currentTarget.parentElement.previousElementSibling
+  todo.value = editlist.innerHTML
   let lists = await getTodo()
   for(const list of lists) {
-    if(editElement.textContent === list.title ) {
+    if(editlist.textContent === list.title ) {
       const { id, order } = list
       editID = id
       editOrder = order
@@ -154,19 +173,33 @@ function setBackToDefault () {
   submitBtn.textContent = 'submit'
 }
 
-async function loadItems() {
+async function loadlist() {
   let lists = await getTodo()
   if(lists.length > 0) {
     container.classList.add('show-container')
-    for(const list of lists) { {
-        createTodo(list.title)
-      }
+    for(const list of lists) {
+      createTodo(list.title, list.id)
+      idArray.push(list.id)
     }
   }
 }
-
-// 드래그&드랍
 new Sortable(list, {
   animation: 150,
   ghostClass: 'blue-backgorund-class'
 })
+async function changelist () {
+  for(let i = 0; i < idArray.length; i++) {
+    const pTitle = document.querySelectorAll('.title')[i].textContent
+    console.log(pTitle);
+    let lists = await getTodo()
+    if (pTitle != lists[i].title) {
+      let articleArray = []
+      for(let j = 0; j < idArray.length; j++) {
+        let articleId = document.querySelectorAll('.item')[j].dataset.id
+        articleArray.push(articleId)
+        console.log(articleArray);
+        await changeOrder(articleArray)
+      }
+    } 
+  }
+}
