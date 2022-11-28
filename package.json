@@ -1,0 +1,24 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1myeji/todo_list.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1myeji/todo_list/issues"
+  },
+  "homepage": "https://github.com/1myeji/todo_list#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  }
+}
