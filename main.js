@@ -12,13 +12,13 @@ const spinner = document.querySelector('.spinner-border')
 
 let editlist
 let editupdate
+let editID
+let editOrder
+let update 
 let editFlag = false
 let overlap = false
-let editID
 let done = false // 일단 해둠
-let editOrder
 let idArray= []
-let update 
 
 // 새로고침
 window.onbeforeunload = () => {
@@ -30,6 +30,7 @@ form.addEventListener('submit', addlist)
 // clear items 누르면
 clearBtn.addEventListener('click', clearlist)
 
+// 리스트 추가
 async function addlist(e) {
   e.preventDefault()
   // 중복값 안 되게
@@ -51,7 +52,7 @@ async function addlist(e) {
     date(updatedAt)
     idArray.push(id)
     createTodo(title, id, update)
-    displayAlert('todo added to the list', 'success')
+    displayAlert('value added to the list', 'success')
     container.classList.add('show-container')
     spinner.classList.remove('show-container')
     setBackToDefault()
@@ -63,7 +64,7 @@ async function addlist(e) {
     const { updatedAt } = lists
     date(updatedAt)
     editupdate.innerHTML = update
-    displayAlert('value changed', 'success')
+    displayAlert('list value changed', 'success')
     spinner.classList.remove('show-container')
     setBackToDefault()
   }
@@ -94,8 +95,8 @@ function createTodo(title, id, update) {
   element.setAttributeNode(attr)
   element.innerHTML = /* html */`
     <p class="title">${title}</p>
-    <p class="update">${update}</p>
     <div class="btn-container">
+      <p class="update">${update}</p>
       <button type="button" class="edit-btn">
         <i class="fas fa-edit"></i>
       </button>
@@ -112,18 +113,17 @@ function createTodo(title, id, update) {
   list.addEventListener('drop', changelist)
 }
 
-// display alert
+// alert 표시
 function displayAlert(text, action) {
   alert.textContent = text
   alert.classList.add(`todoalert-${action}`)
-
-  // remove alert
   setTimeout(function() {
     alert.textContent = ''
     alert.classList.remove(`todoalert-${action}`)
-  }, 1000)
+  }, 1500)
 }
 
+// delete all lists
 async function clearlist() {
   spinner.classList.add('show-container')
   const items = document.querySelectorAll('.item')
@@ -139,11 +139,12 @@ async function clearlist() {
     idArray = []
   }
   container.classList.remove('show-container')
-  displayAlert('empty list', 'danger')
+  displayAlert('All lists deleted', 'danger')
   spinner.classList.remove('show-container')
   setBackToDefault()
 }
 
+// delete
 async function deleteItem(e) {
   spinner.classList.add('show-container')
   const element = e.currentTarget.parentElement.parentElement
@@ -152,7 +153,7 @@ async function deleteItem(e) {
   if(list.children.length === 0) {
     container.classList.remove('show-container')
   }
-  displayAlert('item removed', 'danger')
+  displayAlert('list is deleted', 'danger')
   let lists = await getTodo()
   for(const list of lists) {
     if(title === list.title) {
@@ -174,9 +175,10 @@ async function deleteItem(e) {
   setBackToDefault()
 }
 
+// edit
 async function editItem(e) {
-  editlist = e.currentTarget.parentElement.previousElementSibling.previousElementSibling
-  editupdate = e.currentTarget.parentElement.previousElementSibling
+  editlist = e.currentTarget.parentElement.previousElementSibling
+  editupdate = e.currentTarget.previousElementSibling
   todo.value = editlist.innerHTML
   let lists = await getTodo()
   for(const list of lists) {
