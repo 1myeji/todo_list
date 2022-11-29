@@ -15,15 +15,15 @@ body {
   box-shadow: 0 5px 15px rgb(0, 0, 0, 0.1);
   transition: all 0.3s linear;
   padding: 32px;
-  width: 95vw;
+  width: 800px;
   margin: 0 auto;
-  max-width: 560px;
+  /* max-width: 560px; */
   margin-top: 128px;
 }
 .section-center .todo-form {
 
 }
-.section-center .todo-form .alert {
+.section-center .todo-form .todo-alert {
   margin-bottom: 16px;
   height: 20px;
   display: grid;
@@ -35,11 +35,11 @@ body {
   text-transform: capitalize;
   font-weight: 900;
 }
-.alert-success {
+.todoalert-success {
   color: darkgreen;
   background-color: aquamarine;
 }
-.alert-danger {
+.todoalert-danger {
   color: #721c24;
   background: #f8d7da;
 }
@@ -52,12 +52,12 @@ body {
   letter-spacing: 4px;
   text-transform: capitalize;
 }
-.section-center .todo-form .form-control {
+.section-center .todo-form .todoform-control {
   display: flex;
-  width: 500px;
+  justify-content: center;
   margin: 0 auto;
 }
-.section-center .todo-form .form-control input {
+.section-center .todo-form .todoform-control input {
   padding: 4px;
   font-size: 16px;
   padding-left: 16px;
@@ -65,9 +65,9 @@ body {
   border-radius: 8px 0 0 8px;
   border-color: transparent;
   color: rgb(97, 125, 152);
-  width: 430px;
+  width: 600px;
 }
-.section-center .todo-form .form-control button {
+.section-center .todo-form .todoform-control button {
   background-color: #f8d7da;
   border-color: transparent;
   padding: 4px;
@@ -77,13 +77,13 @@ body {
   cursor: pointer;
   transition: all 0.3s linear;
   font-size: 13.6px;
-  width: 80px;
+  width: 90px;
 }
-.section-center .todo-form .form-control button:hover {
+.section-center .todo-form .todoform-control button:hover {
   color: #fff;
   background-color: pink;
 }
-.section-center .container {
+.section-center .todocontainer {
   margin-top: 32px;
   transition: all 0.3s linear;
   visibility: hidden;
@@ -91,10 +91,10 @@ body {
 .show-container {
   visibility: visible !important;
 }
-.section-center .container .list {
+.section-center .todocontainer .list {
 
 }
-.section-center .container .list .item {
+.section-center .todocontainer .list .item {
   display: flex;
   margin: 0 auto;
   align-items: center;
@@ -106,33 +106,36 @@ body {
   /* border-radius: 8px; */
   text-transform: capitalize;
 }
-.section-center .container .list .item:hover {
+.section-center .todocontainer .list .item:hover {
 
 }
-.section-center .container .list .item p {
+.section-center .todocontainer .list .item .title {
   margin-bottom: 0;
   letter-spacing: 2px;
   transition: all 0.3s linear;
 }
-.section-center .container .list .item .btn-container {
+.section-center .todocontainer .list .item .update {
+  font-size: 12px;
+}
+.section-center .todocontainer .list .item .btn-container {
 
 }
-.section-center .container .list .item .btn-container button {
+.section-center .todocontainer .list .item .btn-container button {
   background-color: transparent;
   border-color: transparent;
   cursor: pointer;
   font-size: 11.2px;
   transition: all 0.3s linear;
 }
-.section-center .container .list .item .btn-container .edit-btn {
+.section-center .todocontainer .list .item .btn-container .edit-btn {
   color: rgb(107, 230, 117);
 }
-.section-center .container .list .item .btn-container .delete-btn {
+.section-center .todocontainer .list .item .btn-container .delete-btn {
   color: red;
 }
-.container .clear-btn {
+.todocontainer .clear-btn {
   text-transform: capitalize;
-  width: 160px;
+  width: 200px;
   height: 24px;
   background-color: transparent;
   border-color: transparent;
@@ -144,4 +147,9 @@ body {
   cursor: pointer;
   transition: all 0.3s linear;
   margin-top: 20px;
+}
+.spinner-border {
+  z-index: 100;
+  position: fixed;
+  visibility: hidden;
 }

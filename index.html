@@ -5,6 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ToDoList_ImYeJi</title>
+  <!-- bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- reset css -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css">
   <link rel="stylesheet" href="./main.css">
@@ -17,17 +19,22 @@
 <body>
   <section class="section-center">
     <form class="todo-form">
-      <p class="alert"></p>
+      <p class="todo-alert"></p>
       <h3>To Do List</h3>
-      <div class="form-control">
+      <div class="todoform-control">
         <input type="text" class="todo" placeholder="Add a Todo..">
         <button type="submit" class="submit-btn">submit</button>
       </div>
     </form>
-    <div class="container">
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div class="todocontainer">
       <div class="list"></div>
-      <button type="button" class="clear-btn">clear items</button>
+      <button type="button" class="clear-btn">delete all lists</button>
     </div>
   </section>
-</body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
 </html>
