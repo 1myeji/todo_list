@@ -63,7 +63,10 @@ body {
   border-radius: 8px 0 0 8px;
   border-color: transparent;
   color: rgb(97, 125, 152);
-  width: 600px;
+  width: 530px;
+}
+.section-center .todo-form .todoform-control select {
+  width: 90px;
 }
 .section-center .todo-form .todoform-control button {
   background-color: #f8d7da;
@@ -100,24 +103,30 @@ body {
   width: 700px;
   margin-bottom: 10px;
   transition: all 0.3s linear;
-  padding: 4px 16px 8px 16px;
+  padding: 4px 8px 8px 8px;
   border-bottom: 3px solid #F1F5F8;
   text-transform: capitalize;
-  cursor: pointer;
+  cursor: crosshair;
 }
 .section-center .todocontainer .list .item:hover {
 
+}
+.section-center .todocontainer .list .item .form-check .form-check-input {
+  margin-right: 14px;
+  cursor: pointer;
 }
 .section-center .todocontainer .list .item .title {
   margin-bottom: 0;
   letter-spacing: 2px;
   transition: all 0.3s linear;
   font-weight: 500;
+  cursor: crosshair;
 }
 .section-center .todocontainer .list .item .update {
   font-size: 12px;
   margin-top: 3px;
   color: dimgrey;
+  margin-right: 8px;
 }
 .section-center .todocontainer .list .item .btn-container {
   display: flex;
@@ -131,10 +140,12 @@ body {
   transition: all 0.3s linear;
 }
 .section-center .todocontainer .list .item .btn-container .edit-btn {
-  color: rgb(107, 230, 117);
+  color: palegreen;
+  font-size: 13px;
 }
 .section-center .todocontainer .list .item .btn-container .delete-btn {
-  color: red;
+  color: orangered;
+  font-size: 13px;
 }
 .todocontainer .clear-btn {
   text-transform: capitalize;
@@ -154,5 +165,8 @@ body {
 .spinner-border {
   z-index: 100;
   position: fixed;
+  visibility: hidden;
+}
+.hide-article {
   visibility: hidden;
 }

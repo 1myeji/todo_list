@@ -9,15 +9,11 @@ const list = document.querySelector('.list')
 const clearBtn = document.querySelector('.clear-btn')
 const orderchangeBtn = document.querySelector('.orderchange-btn')
 const spinner = document.querySelector('.spinner-border')
+const select = document.querySelector('.form-select')
 
-let editlist
-let editupdate
-let editID
-let editOrder
-let update 
+let editlist, editupdate, editID, editOrder, editDone, update 
 let editFlag = false
 let overlap = false
-let done = false // 일단 해둠
 let idArray= []
 
 // 새로고침
@@ -43,7 +39,37 @@ async function addlist(e) {
       todo.value = ''
     } 
   }
-  if(title && !editFlag && !overlap){
+  // 할 일을 완료한 항목과 완료하지 않은 항목 분류해서 출력
+  let doneYet = select.value
+  if(!title && doneYet === 'done') {
+    list.innerHTML = ''
+    for(const list of lists) {
+      if(list.done === true) {
+        date(list.updatedAt)
+        let check = 'checked'
+        createTodo(list.title, list.id, update, check)
+      }
+    }
+  } else if(!title && doneYet === 'yet') {
+    list.innerHTML = ''
+    for(const list of lists) {
+      if(list.done === false) {
+        date(list.updatedAt)
+        createTodo(list.title, list.id, update)
+      }
+    }
+  } else if((!title && doneYet === 'all')) {
+    list.innerHTML = ''
+    for(const list of lists) {
+      date(list.updatedAt)
+      if(list.done === true) {
+        let check = 'checked'
+        createTodo(list.title, list.id, update, check)
+      } else createTodo(list.title, list.id, update)
+    }
+  }
+  
+  if(title && doneYet === 'all' && !editFlag && !overlap){
     spinner.classList.add('show-container')
     let lists = await getTodo()
     let order = lists.length
@@ -57,10 +83,10 @@ async function addlist(e) {
     spinner.classList.remove('show-container')
     setBackToDefault()
   } 
-  else if(title && editFlag && !overlap){
+  else if(title && doneYet === 'all' && editFlag && !overlap){
     spinner.classList.add('show-container')
     editlist.innerHTML = title
-    let lists = await editTodo(editID, title, done, editOrder)
+    let lists = await editTodo(editID, title, editDone, editOrder)
     const { updatedAt } = lists
     date(updatedAt)
     editupdate.innerHTML = update
@@ -68,9 +94,9 @@ async function addlist(e) {
     spinner.classList.remove('show-container')
     setBackToDefault()
   }
-  else if(!title && !overlap){
-    displayAlert('please enter value', 'danger')
-  }
+  // else if(!title && doneYet === 'all' && !overlap){
+  //   displayAlert('please enter value', 'danger')
+  // }
   setBackToDefault()
 }
 
@@ -83,10 +109,10 @@ function date (updatedAt) {
   let hours = ('0' + date.getHours()).slice(-2); 
   let minutes = ('0' + date.getMinutes()).slice(-2);
   let seconds = ('0' + date.getSeconds()).slice(-2);
-  update = `update : ${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  update = `update : ${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`
 }
 
-function createTodo(title, id, update) {
+async function createTodo(title, id, update, check) {
   const element = document.createElement('article')
   // add class
   element.classList.add('item')
@@ -94,14 +120,19 @@ function createTodo(title, id, update) {
   attr.value = id
   element.setAttributeNode(attr)
   element.innerHTML = /* html */`
-    <p class="title">${title}</p>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" ${check}>
+      <label class="form-check-label" for="flexCheckDefault">
+        <p class="title">${title}</p>
+      </label>
+    </div>
     <div class="btn-container">
       <p class="update">${update}</p>
       <button type="button" class="edit-btn">
-        <i class="fas fa-edit"></i>
+        <i class="fa-solid fa-file-pen"></i>
       </button>
       <button type="button" class="delete-btn">
-        <i class="fas fa-trash"></i>
+        <i class="fa-sharp fa-solid fa-trash"></i>
       </button>
     </div>
   `
@@ -110,8 +141,29 @@ function createTodo(title, id, update) {
   deleteBtn.addEventListener('click', deleteItem)
   editBtn.addEventListener('click', editItem)
   list.appendChild(element)
+  // checked
+  const checkbox = element.querySelector('.form-check-input')
+  checkbox.addEventListener('click', async function isChecked (e) {
+    const element = e.currentTarget.parentElement.parentElement
+    const lists = await getTodo()
+    if(checkbox.checked === true) {
+      lists.forEach((list, i) => {
+      if(list.id === element.dataset.id) {
+        editTodo(list.id, list.title, true, list.order)
+      }
+      }) 
+    }
+    else if(checkbox.checked === false) {
+      lists.forEach((list, i) => {
+      if(list.id === element.dataset.id) {
+        editTodo(list.id, list.title, false, list.order)
+      }
+      })
+    }   
+  })  
   list.addEventListener('drop', changelist)
 }
+
 
 // alert 표시
 function displayAlert(text, action) {
@@ -177,15 +229,16 @@ async function deleteItem(e) {
 
 // edit
 async function editItem(e) {
-  editlist = e.currentTarget.parentElement.previousElementSibling
+  editlist = e.currentTarget.parentElement.previousElementSibling.querySelector('.title')
   editupdate = e.currentTarget.previousElementSibling
   todo.value = editlist.innerHTML
   let lists = await getTodo()
   for(const list of lists) {
     if(editlist.textContent === list.title ) {
-      const { id, order } = list
+      const { id, order, done } = list
       editID = id
       editOrder = order
+      editDone = done
       break
     }
   }
@@ -198,9 +251,12 @@ async function loadlist() {
   let lists = await getTodo()
   if(lists.length > 0) {
     container.classList.add('show-container')
-    for(const list of lists) {
+    for(const list of lists){
       date(list.updatedAt)
-      createTodo(list.title, list.id, update)
+      if(list.done === true) {
+        let check = 'checked'
+        createTodo(list.title, list.id, update, check)
+      } else createTodo(list.title, list.id, update)
       idArray.push(list.id)
     }
   }
