@@ -89,9 +89,6 @@ body {
   transition: all 0.3s linear;
   visibility: hidden;
 }
-.show-container {
-  visibility: visible !important;
-}
 .section-center .todocontainer .list {
 
 }
@@ -162,11 +159,11 @@ body {
   transition: all 0.3s linear;
   margin-top: 20px;
 }
+.show {
+  visibility: visible !important;
+}
 .spinner-border {
   z-index: 100;
   position: fixed;
-  visibility: hidden;
-}
-.hide-article {
   visibility: hidden;
 }

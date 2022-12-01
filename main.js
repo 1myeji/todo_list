@@ -1,24 +1,9 @@
 import { getTodo, addTodo, deleteTodo, editTodo, changeOrder } from "./api.js"
-
-const alert = document.querySelector('.todo-alert')
-const form = document.querySelector('.todo-form')
-const todo = document.querySelector('.todo')
-const submitBtn = document.querySelector('.submit-btn')
-const container = document.querySelector('.todocontainer')
-const list = document.querySelector('.list')
-const clearBtn = document.querySelector('.clear-btn')
-const orderchangeBtn = document.querySelector('.orderchange-btn')
-const spinner = document.querySelector('.spinner-border')
-const select = document.querySelector('.form-select')
-
-let editlist, editupdate, editID, editOrder, editDone, update 
-let editFlag = false
-let overlap = false
-let idArray= []
+import { alert, form, todo, submitBtn, container, list, clearBtn, orderchangeBtn, spinner, select, state } from "./store.js"
 
 // 새로고침
 window.onbeforeunload = () => {
-  spinner.classList.add('show-container')
+  classListController(spinner, 'add')
 }
 window.addEventListener('DOMContentLoaded', loadlist)
 // submit 하면
@@ -35,7 +20,7 @@ async function addlist(e) {
   for(const list of lists) {
     if(title === list.title) {
       displayAlert('this value already exists', 'danger')
-      overlap = true
+      state.overlap = true
       todo.value = ''
     } 
   }
@@ -47,7 +32,7 @@ async function addlist(e) {
       if(list.done === true) {
         date(list.updatedAt)
         let check = 'checked'
-        createTodo(list.title, list.id, update, check)
+        createTodo(list.title, list.id, state.update, check)
       }
     }
   } else if(!title && doneYet === 'yet') {
@@ -55,7 +40,7 @@ async function addlist(e) {
     for(const list of lists) {
       if(list.done === false) {
         date(list.updatedAt)
-        createTodo(list.title, list.id, update)
+        createTodo(list.title, list.id, state.update)
       }
     }
   } else if((!title && doneYet === 'all')) {
@@ -64,37 +49,37 @@ async function addlist(e) {
       date(list.updatedAt)
       if(list.done === true) {
         let check = 'checked'
-        createTodo(list.title, list.id, update, check)
-      } else createTodo(list.title, list.id, update)
+        createTodo(list.title, list.id, state.update, check)
+      } else createTodo(list.title, list.id, state.update)
     }
   }
   
-  if(title && doneYet === 'all' && !editFlag && !overlap){
-    spinner.classList.add('show-container')
+  if(title && doneYet === 'all' && !state.editFlag && !state.overlap){
+    classListController(spinner, 'add')
     let lists = await getTodo()
     let order = lists.length
     let todos = await addTodo(title, order)
     const { id, updatedAt } = todos
     date(updatedAt)
-    idArray.push(id)
-    createTodo(title, id, update)
+    state.idArray.push(id)
+    createTodo(title, id, state.update)
     displayAlert('value added to the list', 'success')
-    container.classList.add('show-container')
-    spinner.classList.remove('show-container')
+    classListController(container, 'add')
+    classListController(spinner, 'remove')
     setBackToDefault()
   } 
-  else if(title && doneYet === 'all' && editFlag && !overlap){
-    spinner.classList.add('show-container')
-    editlist.innerHTML = title
-    let lists = await editTodo(editID, title, editDone, editOrder)
+  else if(title && doneYet === 'all' && state.editFlag && !state.overlap){
+    classListController(spinner, 'add')
+    state.editlist.innerHTML = title
+    let lists = await editTodo(state.editID, title, state.editDone, state.editOrder)
     const { updatedAt } = lists
     date(updatedAt)
-    editupdate.innerHTML = update
+    state.editupdate.innerHTML = state.update
     displayAlert('list value changed', 'success')
-    spinner.classList.remove('show-container')
+    classListController(spinner, 'remove')
     setBackToDefault()
   }
-  // else if(!title && doneYet === 'all' && !overlap){
+  // else if(!title && doneYet === 'all' && !state.overlap){
   //   displayAlert('please enter value', 'danger')
   // }
   setBackToDefault()
@@ -109,12 +94,11 @@ function date (updatedAt) {
   let hours = ('0' + date.getHours()).slice(-2); 
   let minutes = ('0' + date.getMinutes()).slice(-2);
   let seconds = ('0' + date.getSeconds()).slice(-2);
-  update = `update : ${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`
+  state.update = `update : ${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`
 }
 
 async function createTodo(title, id, update, check) {
   const element = document.createElement('article')
-  // add class
   element.classList.add('item')
   const attr = document.createAttribute('data-id')
   attr.value = id
@@ -177,7 +161,7 @@ function displayAlert(text, action) {
 
 // delete all lists
 async function clearlist() {
-  spinner.classList.add('show-container')
+  classListController(spinner, 'add')
   const items = document.querySelectorAll('.item')
   if(items.length > 0) {
     items.forEach(item => {
@@ -188,22 +172,22 @@ async function clearlist() {
   for(const list of lists) {
     const { id } = list
     await deleteTodo(id)
-    idArray = []
+    state.idArray = []
   }
-  container.classList.remove('show-container')
+  classListController(container, 'remove')
   displayAlert('All lists deleted', 'danger')
-  spinner.classList.remove('show-container')
+  classListController(spinner, 'remove')
   setBackToDefault()
 }
 
 // delete
 async function deleteItem(e) {
-  spinner.classList.add('show-container')
+  classListController(spinner, 'add')
   const element = e.currentTarget.parentElement.parentElement
   const title = element.querySelector('p').textContent
   list.removeChild(element)
   if(list.children.length === 0) {
-    container.classList.remove('show-container')
+    classListController(container, 'remove')
   }
   displayAlert('list is deleted', 'danger')
   let lists = await getTodo()
@@ -211,10 +195,10 @@ async function deleteItem(e) {
     if(title === list.title) {
       const { id, order } = list
       await deleteTodo(id)
-      idArray.filter(value => value !== id)
+      state.idArray.filter(value => value !== id)
     }
   }
-  spinner.classList.remove('show-container')
+  classListController(spinner, 'remove')
   // delete시 order 변경
   lists = await getTodo()
   for(let i = 0; i < lists.length; i++) {
@@ -229,20 +213,20 @@ async function deleteItem(e) {
 
 // edit
 async function editItem(e) {
-  editlist = e.currentTarget.parentElement.previousElementSibling.querySelector('.title')
-  editupdate = e.currentTarget.previousElementSibling
-  todo.value = editlist.innerHTML
+  state.editlist = e.currentTarget.parentElement.previousElementSibling.querySelector('.title')
+  state.editupdate = e.currentTarget.previousElementSibling
+  todo.value = state.editlist.innerHTML
   let lists = await getTodo()
   for(const list of lists) {
-    if(editlist.textContent === list.title ) {
+    if(state.editlist.textContent === list.title ) {
       const { id, order, done } = list
-      editID = id
-      editOrder = order
-      editDone = done
+      state.editID = id
+      state.editOrder = order
+      state.editDone = done
       break
     }
   }
-  editFlag = true
+  state.editFlag = true
   submitBtn.textContent = 'edit'
 }
 
@@ -250,14 +234,14 @@ async function editItem(e) {
 async function loadlist() {
   let lists = await getTodo()
   if(lists.length > 0) {
-    container.classList.add('show-container')
+    classListController(container, 'add')
     for(const list of lists){
       date(list.updatedAt)
       if(list.done === true) {
         let check = 'checked'
-        createTodo(list.title, list.id, update, check)
-      } else createTodo(list.title, list.id, update)
-      idArray.push(list.id)
+        createTodo(list.title, list.id, state.update, check)
+      } else createTodo(list.title, list.id, state.update)
+      state.idArray.push(list.id)
     }
   }
 }
@@ -268,12 +252,12 @@ new Sortable(list, {
   ghostClass: 'blue-backgorund-class'
 })
 async function changelist () {
-  for(let i = 0; i < idArray.length; i++) {
+  for(let i = 0; i < state.idArray.length; i++) {
     const pTitle = document.querySelectorAll('.title')[i].textContent
     let lists = await getTodo()
     if (pTitle != lists[i].title) {
       let articleArray = []
-      for(let j = 0; j < idArray.length; j++) {
+      for(let j = 0; j < state.idArray.length; j++) {
         let articleId = document.querySelectorAll('.item')[j].dataset.id
         articleArray.push(articleId)
         await changeOrder(articleArray)
@@ -285,7 +269,21 @@ async function changelist () {
 // set back to default
 function setBackToDefault () {
   todo.value = ''
-  editFlag = false
-  overlap = false
+  state.editFlag = false
+  state.overlap = false
   submitBtn.textContent = 'submit'
+}
+
+// 반복되는 classList를 함수로 관리
+function classListController(element, type) {
+  switch (type) {
+    case "add":
+      element.classList.add('show')
+      break
+    case "remove":
+      element.classList.remove('show')
+      break
+    default:
+      break;
+  }
 }
