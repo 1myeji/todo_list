@@ -12,6 +12,7 @@ import {
   select,
   state,
 } from "./store.js";
+import { submitlist } from "./submit.js";
 
 // 새로고침
 window.addEventListener("DOMContentLoaded", loadlist);
@@ -25,7 +26,8 @@ async function loadlist() {
   classListController(container, "add");
   for (const list of lists) {
     date(list.updatedAt);
-    state.idArray.push(list.id); // 새로고침하면 idArray값이 초기화되기 때문에 다시 넣어주기
+    // 새로고침하면 idArray값이 초기화되기 때문에 다시 넣어주기
+    state.idArray.push(list.id);
     if (list.done === true) {
       // 새로고침해도 check 표시 남을 수 있도록
       let check = "checked";
@@ -39,98 +41,31 @@ async function loadlist() {
 
 // Submit
 form.addEventListener("submit", submitlist);
-async function submitlist(e) {
-  e.preventDefault();
-  let title = todo.value;
-  const lists = await getTodo();
-  // 중복값은 추가 할 수 없게 하기
+
+// Delete All Lists 누르면
+clearBtn.addEventListener("click", clearlist);
+async function clearlist() {
+  classListController(spinner, "add");
+  const items = document.querySelectorAll(".item");
+  if (items.length > 0) {
+    items.forEach((item) => {
+      list.removeChild(item);
+    });
+  }
+  let lists = await getTodo();
   for (const list of lists) {
-    if (title === list.title) {
-      displayAlert("this value already exists", "danger");
-      todo.value = "";
-      return;
-    }
+    const { id } = list;
+    await deleteTodo(id);
+    state.idArray = [];
   }
-  // 할 일을 완료한 항목과 완료하지 않은 항목 분류해서 출력
-  let doneYet = select.value;
-  // Done을 select 하고 Submit
-  if (!title && doneYet === "done") {
-    list.innerHTML = "";
-    for (const list of lists) {
-      if (list.done === true) {
-        date(list.updatedAt);
-        let check = "checked";
-        createTodo(list.title, list.id, state.update, check);
-      }
-    }
-    return;
-  }
-  // Yet을 select 하고 Submit
-  if (!title && doneYet === "yet") {
-    list.innerHTML = "";
-    for (const list of lists) {
-      if (list.done === false) {
-        date(list.updatedAt);
-        let check = null;
-        createTodo(list.title, list.id, state.update, check);
-      }
-    }
-    return;
-  }
-  // All을 select하고 Submit
-  if (!title && doneYet === "all") {
-    list.innerHTML = "";
-    for (const list of lists) {
-      date(list.updatedAt);
-      if (list.done === true) {
-        let check = "checked";
-        createTodo(list.title, list.id, state.update, check);
-        continue;
-      }
-      createTodo(list.title, list.id, state.update);
-    }
-    return;
-  }
-  // input값을 입력하고 Submit, addlist
-  if (title && doneYet === "all" && !state.editFlag) {
-    classListController(spinner, "add");
-    let order = lists.length;
-    let todos = await addTodo(title, order);
-    const { id, updatedAt } = todos;
-    date(updatedAt);
-    state.idArray.push(id);
-    createTodo(title, id, state.update);
-    displayAlert("value added to the list", "success");
-    classListController(container, "add");
-    classListController(spinner, "remove");
-    setBackToDefault();
-    return;
-  }
-  // edit 하고 Submit
-  if (title && doneYet === "all" && state.editFlag) {
-    classListController(spinner, "add");
-    state.editlist.innerHTML = title;
-    let lists = await editTodo(
-      state.editID,
-      title,
-      state.editDone,
-      state.editOrder
-    );
-    const { updatedAt } = lists;
-    date(updatedAt);
-    state.editupdate.innerHTML = state.update;
-    displayAlert("list value changed", "success");
-    classListController(spinner, "remove");
-    setBackToDefault();
-  }
+  classListController(container, "remove");
+  displayAlert("All lists deleted", "danger");
+  classListController(spinner, "remove");
   setBackToDefault();
 }
 
-// clear items 누르면
-clearBtn.addEventListener("click", clearlist);
-
 // 날짜 포맷 변경
-function date(updatedAt) {
+export function date(updatedAt) {
   let date = new Date(updatedAt);
   let year = date.getFullYear();
   let month = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -141,7 +76,7 @@ function date(updatedAt) {
   state.update = `update : ${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
 }
 
-async function createTodo(title, id, update, check) {
+export async function createTodo(title, id, update, check) {
   const element = document.createElement("article");
   element.classList.add("item");
   const attr = document.createAttribute("data-id");
@@ -192,34 +127,13 @@ async function createTodo(title, id, update, check) {
 }
 
 // alert 표시
-function displayAlert(text, action) {
+export function displayAlert(text, action) {
   alert.textContent = text;
   alert.classList.add(`todoalert-${action}`);
   setTimeout(function () {
     alert.textContent = "";
     alert.classList.remove(`todoalert-${action}`);
   }, 1100);
-}
-
-// delete all lists
-async function clearlist() {
-  classListController(spinner, "add");
-  const items = document.querySelectorAll(".item");
-  if (items.length > 0) {
-    items.forEach((item) => {
-      list.removeChild(item);
-    });
-  }
-  let lists = await getTodo();
-  for (const list of lists) {
-    const { id } = list;
-    await deleteTodo(id);
-    state.idArray = [];
-  }
-  classListController(container, "remove");
-  displayAlert("All lists deleted", "danger");
-  classListController(spinner, "remove");
-  setBackToDefault();
 }
 
 // delete
@@ -296,14 +210,14 @@ async function changelist() {
 }
 
 // set back to default
-function setBackToDefault() {
+export function setBackToDefault() {
   todo.value = "";
   state.editFlag = false;
   submitBtn.textContent = "submit";
 }
 
 // 반복되는 classList를 함수로 관리
-function classListController(element, type) {
+export function classListController(element, type) {
   switch (type) {
     case "add":
       element.classList.add("show");
