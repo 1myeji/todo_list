@@ -104,7 +104,7 @@ body {
   padding: 4px 8px 8px 8px;
   border-bottom: 3px solid #f1f5f8;
   text-transform: capitalize;
-  cursor: crosshair;
+  cursor: move;
 }
 .section-center .todocontainer .list .item:hover {
 }
@@ -117,7 +117,7 @@ body {
   letter-spacing: 2px;
   transition: all 0.3s linear;
   font-weight: 500;
-  cursor: crosshair;
+  cursor: move;
 }
 .section-center .todocontainer .list .item .update {
   font-size: 12px;
