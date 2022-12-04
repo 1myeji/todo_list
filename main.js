@@ -14,6 +14,7 @@ import {
 } from "./store.js";
 import { submitlist } from "./submit.js";
 import { loadlist } from "./load.js";
+
 // 새로고침
 window.addEventListener("DOMContentLoaded", loadlist);
 
@@ -71,18 +72,17 @@ export async function createTodo(title, id, update, check) {
   // 체크표시 하기
   const checkbox = element.querySelector(".form-check-input");
   checkbox.addEventListener("click", async (e) => {
-    const element = e.currentTarget.parentElement.parentElement;
-    const lists = await getTodo();
-    lists.forEach((list, i) => {
-      if (checkbox.checked === true && list.id === element.dataset.id) {
-        editTodo(list.id, list.title, true, list.order);
-        return;
-      }
-      // check됐던 거 check 해제 시
-      if (checkbox.checked === false && list.id === element.dataset.id) {
-        editTodo(list.id, list.title, false, list.order);
-      }
-    });
+    const el = e.currentTarget.parentElement.parentElement;
+    const title = el.querySelector(".title").textContent;
+    const order = Array.from(document.querySelectorAll(".item")).indexOf(el);
+    if (e.currentTarget.checked === true) {
+      editTodo(el.dataset.id, title, true, order);
+      return;
+    }
+    // check됐던 거 check 해제 시
+    if (e.currentTarget.checked === false) {
+      editTodo(el.dataset.id, title, false, order);
+    }
   });
   list.addEventListener("drop", changelist);
 }
