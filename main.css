@@ -2,7 +2,7 @@
 
 /* COMMON */
 body {
-  background-color: #f1f5f8;
+  background-color: #f0f0f0;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -16,7 +16,7 @@ body {
   padding: 32px;
   width: 800px;
   margin: 0 auto;
-  margin-top: 90px;
+  margin-top: 20px;
 }
 .section-center .todo-form {
 }
@@ -58,22 +58,22 @@ body {
   padding: 4px;
   font-size: 16px;
   padding-left: 16px;
-  background-color: rgb(241, 245, 248);
-  border-radius: 8px 0 0 8px;
+  background-color: #f0f0f0;
   border-color: transparent;
+  border-radius: 6px 0 0 6px;
   color: rgb(97, 125, 152);
   width: 530px;
 }
 .section-center .todo-form .todoform-control select {
   width: 90px;
+  border-radius: 0;
 }
 .section-center .todo-form .todoform-control button {
-  background-color: #f8d7da;
   border-color: transparent;
+  border-radius: 0 6px 6px 0;
   padding: 4px;
   text-transform: capitalize;
   letter-spacing: 2px;
-  border-radius: 0 8px 8px 0;
   cursor: pointer;
   transition: all 0.3s linear;
   font-size: 13.6px;
@@ -81,7 +81,6 @@ body {
 }
 .section-center .todo-form .todoform-control button:hover {
   color: #fff;
-  background-color: pink;
 }
 .section-center .todocontainer {
   margin-top: 32px;
@@ -102,7 +101,7 @@ body {
   margin-bottom: 10px;
   transition: all 0.3s linear;
   padding: 4px 8px 8px 8px;
-  border-bottom: 3px solid #f1f5f8;
+  border-bottom: 3px solid #f0f0f0;
   text-transform: capitalize;
   cursor: move;
 }
@@ -137,12 +136,10 @@ body {
   transition: all 0.3s linear;
 }
 .section-center .todocontainer .list .item .btn-container .edit-btn {
-  color: palegreen;
-  font-size: 13px;
+  font-size: 14px;
 }
 .section-center .todocontainer .list .item .btn-container .delete-btn {
-  color: orangered;
-  font-size: 13px;
+  font-size: 14px;
 }
 .todocontainer .clear-btn {
   text-transform: capitalize;
@@ -150,7 +147,6 @@ body {
   height: 24px;
   background-color: transparent;
   border-color: transparent;
-  color: red;
   margin: 0 auto;
   display: grid;
   font-size: 15px;
