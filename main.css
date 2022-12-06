@@ -1,8 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+@font-face {
+  font-family: "Cafe24ClassicType-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Cafe24ClassicType-Regular.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* COMMON */
 body {
-  background-color: #f0f0f0;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -10,6 +16,7 @@ body {
 }
 .section-center {
   background-color: #fff;
+  border: 1px solid black;
   border-radius: 8px;
   box-shadow: 0 5px 15px rgb(0, 0, 0, 0.1);
   transition: all 0.3s linear;
@@ -33,15 +40,16 @@ body {
   font-weight: 900;
 }
 .todoalert-success {
-  color: darkgreen;
-  background-color: aquamarine;
+  color: #fff;
+  background-color: steelblue;
 }
 .todoalert-danger {
-  color: #721c24;
-  background: #f8d7da;
+  color: #fff;
+  background: orangered;
 }
 .section-center .todo-form h3 {
-  color: rgb(6, 50, 81);
+  font-family: "Cafe24ClassicType-Regular", sans-serif;
+  /* color: rgb(6, 50, 81); */
   margin-bottom: 24px;
   text-align: center;
   font-size: 28px;
@@ -69,6 +77,7 @@ body {
   border-radius: 0;
 }
 .section-center .todo-form .todoform-control button {
+  background-color: steelblue;
   border-color: transparent;
   border-radius: 0 6px 6px 0;
   padding: 4px;
@@ -101,7 +110,7 @@ body {
   margin-bottom: 10px;
   transition: all 0.3s linear;
   padding: 4px 8px 8px 8px;
-  border-bottom: 3px solid #f0f0f0;
+  border-bottom: 1px solid black;
   text-transform: capitalize;
   cursor: move;
 }
@@ -137,16 +146,19 @@ body {
 }
 .section-center .todocontainer .list .item .btn-container .edit-btn {
   font-size: 14px;
+  color: steelblue;
 }
 .section-center .todocontainer .list .item .btn-container .delete-btn {
+  color: orangered;
   font-size: 14px;
 }
 .todocontainer .clear-btn {
+  color: orangered;
   text-transform: capitalize;
   width: 200px;
   height: 24px;
   background-color: transparent;
-  border-color: transparent;
+  border: 1px solid orangered;
   margin: 0 auto;
   display: grid;
   font-size: 15px;

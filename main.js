@@ -142,14 +142,14 @@ new Sortable(list, {
 });
 async function changelist() {
   for (let i = 0; i < state.idArray.length; i++) {
-    const pTitle = document.querySelectorAll(".title")[i].textContent;
+    const title = document.querySelectorAll(".title")[i].textContent;
     const lists = await getTodo();
-    if (pTitle != lists[i].title) {
-      let articleArray = [];
+    if (title != lists[i].title) {
+      let array = [];
       for (let j = 0; j < state.idArray.length; j++) {
-        let articleId = document.querySelectorAll(".item")[j].dataset.id;
-        articleArray.push(articleId);
-        await changeOrder(articleArray);
+        let id = document.querySelectorAll(".item")[j].dataset.id;
+        array.push(id);
+        await changeOrder(array);
       }
     }
   }
